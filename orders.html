@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders | KK Fashion</title>
+<meta name="description" content="Track and manage your KK Fashion orders — view status, order details and delivery tracking.">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="fade-in-page">
+
+<header class="site-header minimal-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">KK <span>Fashion</span></a>
+  </div>
+</header>
+
+<div class="page-banner">
+  <h1>My Orders</h1>
+  <p>Track, manage and revisit everything you've ordered.</p>
+</div>
+
+<div class="order-tabs" id="order-tabs">
+  <button class="order-tab active" data-tab="All">All</button>
+  <button class="order-tab" data-tab="Processing">Processing</button>
+  <button class="order-tab" data-tab="Shipped">Shipped</button>
+  <button class="order-tab" data-tab="Delivered">Delivered</button>
+  <button class="order-tab" data-tab="Cancelled">Cancelled</button>
+</div>
+
+<div class="container" id="orders-list" style="padding-bottom:60px;"></div>
+
+<!-- Order tracking modal -->
+<div class="modal-overlay" id="track-overlay"></div>
+<div class="modal" id="track-modal">
+  <button class="icon-btn modal-close" id="track-modal-close" aria-label="Close">&times;</button>
+  <h3 id="track-modal-title" style="margin-bottom:6px;">Track Order</h3>
+  <p style="font-size:12.5px; color:var(--charcoal-soft); margin-bottom:20px;" id="track-modal-sub"></p>
+  <div class="order-tracker" id="track-steps"></div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-bottom">© 2026 KK Fashion · All rights reserved.</div>
+</footer>
+
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="home.html" data-nav-page="home.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 11L12 4l8 7" stroke="currentColor" stroke-width="1.8"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8"/></svg>
+    Home
+  </a>
+  <a href="products.html" data-nav-page="products.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
+    Products
+  </a>
+  <a href="orders.html" data-nav-page="orders.html">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Orders
+  </a>
+  <a href="profile.html" data-nav-page="profile.html">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1.6-4 5-6 8-6s6.4 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<div id="drawer-overlay"></div>
+<aside class="drawer" id="cart-drawer" aria-label="Shopping cart">
+  <div class="drawer-header">
+    <h3>Your Bag</h3>
+    <button class="icon-btn close-drawer-btn" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-body" id="cart-drawer-body"></div>
+  <div class="drawer-footer" id="cart-drawer-footer"></div>
+</aside>
+
+<script src="js/products.js"></script>
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+<script>
+(function () {
+  const STEPS = ["Ordered","Confirmed","Packed","Shipped","Delivered"];
+  const SAMPLE_ORDERS = [
+    { id: "KK10234", productId: 2, qty: 1, date: "12 Aug 2026", status: "Shipped", stepIndex: 3 },
+    { id: "KK10221", productId: 8, qty: 2, date: "5 Aug 2026", status: "Delivered", stepIndex: 4 },
+    { id: "KK10198", productId: 15, qty: 1, date: "29 Jul 2026", status: "Processing", stepIndex: 1 },
+    { id: "KK10176", productId: 5, qty: 1, date: "18 Jul 2026", status: "Delivered", stepIndex: 4 },
+    { id: "KK10150", productId: 12, qty: 1, date: "2 Jul 2026", status: "Cancelled", stepIndex: -1 },
+  ];
+
+  let activeTab = "All";
+
+  function statusClass(status) {
+    return "status-" + status.toLowerCase();
+  }
+
+  function render() {
+    const list = document.getElementById("orders-list");
+    const filtered = activeTab === "All" ? SAMPLE_ORDERS : SAMPLE_ORDERS.filter(o => o.status === activeTab);
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty-state"><h3>No orders here</h3><p>Orders in this status will show up here.</p></div>`;
+      return;
+    }
+    list.innerHTML = filtered.map(o => {
+      const p = kkGetProductById(o.productId);
+      return `
+      <div class="order-card">
+        <div class="order-card-head">
+          <span>Order #${o.id}</span>
+          <span class="order-status ${statusClass(o.status)}">${o.status}</span>
+        </div>
+        <a class="order-card-body order-product-link" href="product.html?id=${p.id}" aria-label="Open ${p.name}">
+          <img src="${p.image}" alt="${p.name}">
+          <div>
+            <p style="font-weight:600; font-size:14px;">${p.name}</p>
+            <p style="font-size:12.5px; color:var(--charcoal-soft); margin:4px 0;">Qty: ${o.qty} &middot; ${kkFormatPrice(p.price * o.qty)}</p>
+            <p style="font-size:12px; color:var(--charcoal-soft);">Ordered on ${o.date}</p>
+          </div>
+        </a>
+      </div>`;
+    }).join("");
+
+    document.querySelectorAll("[data-track]").forEach(btn => btn.addEventListener("click", () => {
+      const order = SAMPLE_ORDERS.find(o => o.id === btn.getAttribute("data-track"));
+      openTrackModal(order);
+    }));
+  }
+
+  function openTrackModal(order) {
+    document.getElementById("track-modal-title").textContent = `Track Order #${order.id}`;
+    document.getElementById("track-modal-sub").textContent = `Ordered on ${order.date}`;
+    document.getElementById("track-steps").innerHTML = STEPS.map((s, i) => `
+      <div class="tracker-step ${i < order.stepIndex ? 'done' : ''} ${i === order.stepIndex ? 'current' : ''}">
+        <div class="tracker-dot">${i <= order.stepIndex ? '✓' : i + 1}</div>
+        <span class="label">${s}</span>
+      </div>`).join("");
+    document.getElementById("track-overlay").classList.add("open");
+    document.getElementById("track-modal").classList.add("open");
+  }
+  function closeTrackModal() {
+    document.getElementById("track-overlay").classList.remove("open");
+    document.getElementById("track-modal").classList.remove("open");
+  }
+  document.getElementById("track-overlay").addEventListener("click", closeTrackModal);
+  document.getElementById("track-modal-close").addEventListener("click", closeTrackModal);
+
+  document.querySelectorAll(".order-tab").forEach(tab => tab.addEventListener("click", () => {
+    document.querySelectorAll(".order-tab").forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    activeTab = tab.getAttribute("data-tab");
+    render();
+  }));
+
+  render();
+})();
+</script>
+</body>
+</html>

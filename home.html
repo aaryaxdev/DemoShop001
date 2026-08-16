@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KK Fashion | Premium Fashion Collection</title>
+<meta name="description" content="Shop the KK Fashion homepage — featured collections, new arrivals and trending styles across women's, men's and kids' fashion.">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="fade-in-page">
+
+<header class="site-header minimal-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">KK <span>Fashion</span></a>
+  </div>
+</header>
+
+
+<section class="home-promo" aria-label="New collection offer">
+  <div class="home-promo-copy">
+    <span class="eyebrow">NEW SEASON · KK FASHION</span>
+    <h1>New Collection,<br><span>Fresh Confidence.</span></h1>
+    <p>Discover refined everyday styles, occasion-ready silhouettes and fresh fashion picks curated for the new season.</p>
+    <div class="home-promo-meta">
+      <span>Up to <strong>30% OFF</strong></span>
+      <span>New arrivals every week</span>
+    </div>
+    <a href="products.html" class="btn btn-primary home-promo-cta">Start Shopping <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="home-promo-media">
+    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1100&h=800&q=88" alt="New season fashion collection" width="1100" height="800" fetchpriority="high">
+    <div class="home-promo-tag">NEW<br>SEASON</div>
+  </div>
+</section>
+
+<section class="home-showcase" aria-label="KK Fashion showcase">
+  <div class="home-product-panel">
+    <div class="section-head compact-head">
+      <div>
+        <span class="eyebrow">CURATED FOR YOU</span>
+        <h2>Latest Picks</h2>
+        <p class="subtitle">Five styles to start with.</p>
+      </div>
+      <a href="products.html" class="view-all">View All</a>
+    </div>
+    <div class="home-product-grid" id="home-products-grid"></div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-bottom">© 2026 KK Fashion · All rights reserved.</div>
+</footer>
+
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="home.html" data-nav-page="home.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 11L12 4l8 7" stroke="currentColor" stroke-width="1.8"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8"/></svg>
+    Home
+  </a>
+  <a href="products.html" data-nav-page="products.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
+    Products
+  </a>
+  <a href="orders.html" data-nav-page="orders.html">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Orders
+  </a>
+  <a href="profile.html" data-nav-page="profile.html">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1.6-4 5-6 8-6s6.4 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<div id="drawer-overlay"></div>
+<aside class="drawer" id="cart-drawer" aria-label="Shopping cart">
+  <div class="drawer-header">
+    <h3>Your Bag</h3>
+    <button class="icon-btn close-drawer-btn" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-body" id="cart-drawer-body"></div>
+  <div class="drawer-footer" id="cart-drawer-footer"></div>
+</aside>
+
+<script src="js/products.js"></script>
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const picks = KK_PRODUCTS.filter(p => p.isFeatured || p.isTrending).slice(0, 5);
+    document.getElementById("home-products-grid").innerHTML =
+      picks.map(kkProductCardHTML).join("");
+  });
+</script>
+</body>
+</html>

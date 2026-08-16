@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Profile | KK Fashion</title>
+<meta name="description" content="Manage your KK Fashion account — orders, wishlist, rewards, addresses, payment methods and settings.">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="fade-in-page">
+
+<header class="site-header minimal-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">KK <span>Fashion</span></a>
+  </div>
+</header>
+
+<section class="profile-header">
+  <div class="profile-avatar"><img src="https://images.unsplash.com/photo-1551488831-00ddcb6c6bd3?auto=format&fit=crop&w=300&h=300&q=85" alt="KK Fashion clothing collection"></div>
+  <div class="profile-header-info" style="flex:1;">
+    <h2>Riya Kapoor</h2>
+    <p>riya.kapoor@example.com &middot; +91 98765 43210</p>
+  </div>
+  
+</section>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="num">12</div><div class="lbl">Orders</div></div>
+  <div class="stat-card"><div class="num" id="wishlist-stat">0</div><div class="lbl">Wishlist</div></div>
+  <div class="stat-card"><div class="num">2,450</div><div class="lbl">Rewards</div></div>
+  <div class="stat-card"><div class="num">5</div><div class="lbl">Coupons</div></div>
+</div>
+
+<div class="rewards-card">
+  <h3>KK Rewards</h3>
+  <div class="rewards-points">2,450 Points</div>
+  <div class="progress-bar"><div class="progress-bar-fill" style="width:49%;"></div></div>
+  <p class="note">2,550 more points to unlock your next reward.</p>
+  <button class="btn btn-gold btn-sm" id="view-rewards-btn">View Rewards</button>
+</div>
+
+<div class="membership-card">
+  <p style="font-size:12px; text-transform:uppercase; letter-spacing:0.08em; opacity:0.9;">KK Fashion Member</p>
+  <p class="plan-name">Gold Member</p>
+  <ul>
+    <li>Early Access to new collections</li>
+    <li>Exclusive Member Discounts</li>
+    <li>Birthday Offers</li>
+    <li>Free Shipping on every order</li>
+    <li>Special Reward Multipliers</li>
+  </ul>
+  <button class="btn btn-primary btn-sm" id="view-membership-btn">View Membership</button>
+</div>
+
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="home.html" data-nav-page="home.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 11L12 4l8 7" stroke="currentColor" stroke-width="1.8"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8"/></svg>
+    Home
+  </a>
+  <a href="products.html" data-nav-page="products.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
+    Products
+  </a>
+  <a href="orders.html" data-nav-page="orders.html">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Orders
+  </a>
+  <a href="profile.html" data-nav-page="profile.html">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1.6-4 5-6 8-6s6.4 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<script src="js/products.js"></script>
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+</body>
+</html>

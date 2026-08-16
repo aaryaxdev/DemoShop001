@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Products | KK Fashion</title>
+<meta name="description" content="Browse the KK Fashion collection by category with a clean, focused shopping experience.">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="fade-in-page">
+
+<header class="site-header minimal-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">KK <span>Fashion</span></a>
+  </div>
+</header>
+
+<div class="products-category-section products-category-only">
+  <div class="category-tabs products-category-strip" id="products-category-tabs" aria-label="Product categories"></div>
+  <span class="sr-only" id="results-count">Showing 0 products</span>
+  <span class="sr-only" id="products-heading">All Products</span>
+  <span class="sr-only" id="products-subheading">Every style, in one place.</span>
+</div>
+
+<main class="products-content">
+<div class="product-grid" id="products-grid"></div>
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <h3>No products found</h3>
+    <p>Try selecting another category.</p>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-bottom">© 2026 KK Fashion · All rights reserved.</div>
+</footer>
+
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="home.html" data-nav-page="home.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 11L12 4l8 7" stroke="currentColor" stroke-width="1.8"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8"/></svg>
+    Home
+  </a>
+  <a href="products.html" data-nav-page="products.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
+    Products
+  </a>
+  <a href="orders.html" data-nav-page="orders.html">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Orders
+  </a>
+  <a href="profile.html" data-nav-page="profile.html">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1.6-4 5-6 8-6s6.4 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<div id="drawer-overlay"></div>
+<aside class="drawer" id="cart-drawer" aria-label="Shopping cart">
+  <div class="drawer-header">
+    <h3>Your Bag</h3>
+    <button class="icon-btn close-drawer-btn" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-body" id="cart-drawer-body"></div>
+  <div class="drawer-footer" id="cart-drawer-footer"></div>
+</aside>
+
+<script src="js/products.js"></script>
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+<script>
+/* ----- Products page controller ----- */
+(function () {
+  const ALL_CATEGORIES = ["Women","Men","Kids","Sarees","Kurtis","Dresses","Shirts","T-Shirts","Jeans","Western Wear","Ethnic Wear","Accessories","New Arrivals","Sale"];
+  const params = new URLSearchParams(window.location.search);
+  const state = {
+    category: params.get("category") || "all",
+    search: params.get("search") || "",
+    sort: "recommended"
+  };
+  const VALID_CATEGORIES = new Set(["all", ...ALL_CATEGORIES]);
+  if (!VALID_CATEGORIES.has(state.category)) state.category = "all";
+
+  function resolveCategoryFilter(p) {
+    if (state.category === "all") return true;
+    if (state.category === "New Arrivals") return !!p.isNew;
+    if (state.category === "Sale") return p.discount >= 25;
+    return p.category === state.category || p.subCategory === state.category;
+  }
+
+  function applyFilters() {
+    let list = KK_PRODUCTS.filter(resolveCategoryFilter);
+    if (state.search) {
+      const q = state.search.toLowerCase();
+      list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.subCategory.toLowerCase().includes(q));
+    }
+    return list;
+  }
+
+  function syncCategoryUrl() {
+    const url = new URL(window.location.href);
+    if (state.category === "all") url.searchParams.delete("category");
+    else url.searchParams.set("category", state.category);
+    if (state.search) url.searchParams.set("search", state.search);
+    else url.searchParams.delete("search");
+    history.replaceState({}, "", url);
+  }
+
+  function buildCategoryTabs() {
+    const wrap = document.getElementById("products-category-tabs");
+    if (!wrap) return;
+    wrap.innerHTML = ["all", ...ALL_CATEGORIES].map(c => {
+      const label = c === "all" ? "All" : c;
+      return `<button type="button" class="category-tab${state.category === c ? " active" : ""}" data-product-category="${c}">${label}</button>`;
+    }).join("");
+    wrap.querySelectorAll("[data-product-category]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        state.category = btn.getAttribute("data-product-category") || "all";
+        syncCategoryUrl();
+        buildCategoryTabs();
+        render();
+      });
+    });
+  }
+
+  function render() {
+    const grid = document.getElementById("products-grid");
+    const empty = document.getElementById("empty-state");
+    const results = applyFilters();
+    document.getElementById("results-count").textContent = `Showing ${results.length} product${results.length === 1 ? "" : "s"}`;
+
+    const heading = document.getElementById("products-heading");
+    const sub = document.getElementById("products-subheading");
+    if (heading && sub) {
+      if (state.search) {
+        heading.textContent = `Results for "${state.search}"`;
+        sub.textContent = "Search across the KK Fashion catalogue.";
+      } else if (state.category !== "all") {
+        heading.textContent = state.category;
+        sub.textContent = `Explore our ${state.category} edit.`;
+      } else {
+        heading.textContent = "All Products";
+        sub.textContent = "Choose a category and discover your style.";
+      }
+    }
+
+    if (!results.length) {
+      grid.style.display = "none";
+      empty.style.display = "block";
+    } else {
+      grid.style.display = "grid";
+      empty.style.display = "none";
+      grid.innerHTML = results.map(kkProductCardHTML).join("");
+    }
+  }
+
+  buildCategoryTabs();
+  render();
+})();
+</script>
+</body>
+</html>

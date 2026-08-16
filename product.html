@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title id="page-title">Product | KK Fashion</title>
+<meta name="description" id="page-description" content="Shop premium fashion at KK Fashion.">
+<link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body class="fade-in-page">
+
+<header class="site-header minimal-header">
+  <div class="header-inner">
+    <a href="index.html" class="logo">KK <span>Fashion</span></a>
+  </div>
+</header>
+
+<div class="product-detail" id="product-detail"><!-- filled by JS --></div>
+
+<section class="section">
+  <div class="section-head"><div><h2>Customer Reviews</h2></div></div>
+  <div class="container">
+    <div class="reviews-summary">
+      <div class="reviews-score" id="review-score">4.6</div>
+      <div>
+        <p class="review-stars" id="review-stars">★★★★★</p>
+        <p style="font-size:13px; color:var(--charcoal-soft);" id="review-count">Based on 128 reviews</p>
+      </div>
+    </div>
+    <div id="reviews-list"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-head"><div><h2>Complete Your Look</h2><p class="subtitle">More from this category.</p></div></div>
+  <div class="product-grid" id="related-grid"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-bottom">© 2026 KK Fashion · All rights reserved.</div>
+</footer>
+
+<nav class="bottom-nav" aria-label="Mobile navigation">
+  <a href="home.html" data-nav-page="home.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M4 11L12 4l8 7" stroke="currentColor" stroke-width="1.8"/><path d="M6 10v9h12v-9" stroke="currentColor" stroke-width="1.8"/></svg>
+    Home
+  </a>
+  <a href="products.html" data-nav-page="products.html">
+    <svg viewBox="0 0 24 24" fill="none"><path d="M6 8h12l-1 12H7L6 8z" stroke="currentColor" stroke-width="1.8"/><path d="M9 8V6a3 3 0 016 0v2" stroke="currentColor" stroke-width="1.8"/></svg>
+    Products
+  </a>
+  <a href="orders.html" data-nav-page="orders.html">
+    <svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M8 10h8M8 14h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Orders
+  </a>
+  <a href="profile.html" data-nav-page="profile.html">
+    <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="1.8"/><path d="M4 20c1.6-4 5-6 8-6s6.4 2 8 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Profile
+  </a>
+</nav>
+
+<div id="drawer-overlay"></div>
+<aside class="drawer" id="cart-drawer" aria-label="Shopping cart">
+  <div class="drawer-header">
+    <h3>Your Bag</h3>
+    <button class="icon-btn close-drawer-btn" aria-label="Close cart">&times;</button>
+  </div>
+  <div class="drawer-body" id="cart-drawer-body"></div>
+  <div class="drawer-footer" id="cart-drawer-footer"></div>
+</aside>
+
+<script src="js/products.js"></script>
+<script src="js/script.js"></script>
+<script src="js/navigation.js"></script>
+<script>
+(function () {
+  const params = new URLSearchParams(window.location.search);
+  const id = Number(params.get("id")) || KK_PRODUCTS[0].id;
+  const product = kkGetProductById(id) || KK_PRODUCTS[0];
+  let selectedSize = product.sizes[0];
+  // Color and quantity selectors are intentionally removed from the product UI.
+  // Cart uses the first available color and a default quantity of 1.
+  const selectedColor = product.colors[0];
+  const qty = 1;
+
+  document.getElementById("page-title").textContent = `${product.name} | KK Fashion`;
+  document.getElementById("page-description").setAttribute("content", product.description);
+  kkAddRecentlyViewed(product.id);
+
+  function galleryImages() {
+    // Simulate a small gallery using seeded variants of the same product image
+    return [product.image, product.image + "-2", product.image + "-3"].map((src, i) =>
+      i === 0 ? product.image : product.image
+    );
+  }
+  const images = galleryImages();
+
+  function renderDetail() {
+    document.getElementById("product-detail").innerHTML = `
+      <div>
+        <div class="gallery-main"><img id="gallery-main-img" src="${images[0]}" alt="${product.name}"></div>
+
+      </div>
+      <div>
+        <p class="pd-category">${product.category}</p>
+        <h1 class="pd-name">${product.name}</h1>
+        <p class="pd-rating"><strong>★ ${product.rating}</strong> (${product.reviews} reviews)</p>
+        <div class="pd-price">
+          <span class="price-current">${kkFormatPrice(product.price)}</span>
+          <span class="price-original">${kkFormatPrice(product.originalPrice)}</span>
+          <span class="price-discount">${product.discount}% off</span>
+        </div>
+        <p class="pd-availability">● ${product.availability}</p>
+
+        <div class="option-group">
+          <h4>Size</h4>
+          <div class="size-row" id="size-row">
+            ${product.sizes.map(s => `<button type="button" class="size-chip ${s===selectedSize?'selected':''}" data-size="${s}">${s}</button>`).join("")}
+          </div>
+        </div>
+        <div class="pd-actions">
+          <button class="btn btn-outline" id="add-to-cart-btn" type="button">Add to Cart</button>
+          <button class="btn btn-primary" id="buy-now-btn" type="button">Buy Now</button>
+        </div>
+
+        <div class="pd-meta-table">
+          <div class="row"><span>Description</span><span style="text-align:right; max-width:60%;">${product.description}</span></div>
+          <div class="row"><span>Material</span><span>${product.material}</span></div>
+          <div class="row"><span>Fit</span><span>${product.fit}</span></div>
+          <div class="row"><span>Brand</span><span>${product.brand}</span></div>
+          <div class="row"><span>Care Instructions</span><span>${product.care}</span></div>
+          <div class="row"><span>Availability</span><span>${product.availability}</span></div>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll("#size-row .size-chip").forEach(btn => btn.addEventListener("click", () => {
+      selectedSize = btn.getAttribute("data-size");
+      document.querySelectorAll("#size-row .size-chip").forEach(b => b.classList.remove("selected"));
+      btn.classList.add("selected");
+    }));
+    document.getElementById("add-to-cart-btn").addEventListener("click", () => {
+      kkAddToCart(product.id, selectedSize, selectedColor, qty);
+      showActionPopup("Added to Cart", `${product.name} has been added to your cart.`);
+    });
+    document.getElementById("buy-now-btn").addEventListener("click", () => {
+      showActionPopup("Buy Now", "Your purchase action is ready. No extra page was opened.");
+    });
+  }
+
+  function showActionPopup(title, message) {
+    let popup = document.getElementById("action-popup");
+    if (!popup) {
+      popup = document.createElement("div");
+      popup.id = "action-popup";
+      popup.className = "action-popup";
+      popup.innerHTML = `
+        <div class="action-popup-card" role="dialog" aria-modal="true" aria-labelledby="action-popup-title">
+          <button type="button" class="action-popup-close" aria-label="Close">&times;</button>
+          <div class="action-popup-icon">✓</div>
+          <h3 id="action-popup-title"></h3>
+          <p id="action-popup-message"></p>
+          <button type="button" class="btn btn-primary action-popup-ok">OK</button>
+        </div>`;
+      document.body.appendChild(popup);
+      const close = () => popup.classList.remove("show");
+      popup.querySelector(".action-popup-close").addEventListener("click", close);
+      popup.querySelector(".action-popup-ok").addEventListener("click", close);
+      popup.addEventListener("click", e => { if (e.target === popup) close(); });
+    }
+    popup.querySelector("#action-popup-title").textContent = title;
+    popup.querySelector("#action-popup-message").textContent = message;
+    popup.classList.add("show");
+  }
+
+  function renderReviews() {
+    const reviews = kkGetReviews(product.id);
+    document.getElementById("review-score").textContent = product.rating;
+    document.getElementById("review-stars").textContent = kkStarString(product.rating);
+    document.getElementById("review-count").textContent = `Based on ${product.reviews} reviews`;
+    document.getElementById("reviews-list").innerHTML = reviews.map(r => `
+      <div class="review-card">
+        <div class="rc-head"><span class="rc-name">${r.name}</span><span class="rc-date">${r.date}</span></div>
+        <p class="rc-stars">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</p>
+        <p>${r.text}</p>
+      </div>`).join("");
+  }
+
+  function renderRelated() {
+    const related = kkGetRelatedProducts(product, 4);
+    document.getElementById("related-grid").innerHTML = related.length
+      ? related.map(kkProductCardHTML).join("")
+      : `<p style="padding:0 24px; color:var(--charcoal-soft);">More styles coming soon in this category.</p>`;
+  }
+
+  renderDetail();
+  renderReviews();
+  renderRelated();
+})();
+</script>
+</body>
+</html>
